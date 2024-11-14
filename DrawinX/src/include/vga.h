@@ -1,4 +1,4 @@
-#include "types.h"
+#include "keyboard.h"
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
 
@@ -13,13 +13,17 @@ void cprintf(string content, uint_8 color)
     }
 }
 
-void cprintc(char c, uint_8 color)
+void putc(char c, uint_16 cursor)
 {
-    uint_16 cursor = 0;
-    vga[cursor * 2] = c;
-    vga[cursor * 2 + 1] = color;
-    cursor++;
-
-    if (cursor >= VGA_WIDTH * VGA_HEIGHT)
-        cursor = 0;
+        vga[cursor * 2] = c;
+        vga[cursor * 2 + 1] = 0x0F;
 }
+
+void changePositionOfCursor(uint_32 position)
+{
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint_8) (position & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint_8) ((position >> 8) && 0xFF));
+}
+

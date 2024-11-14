@@ -1,30 +1,44 @@
 #include "types.h"
+#define KEYBOARD_PORT 0x60
 
-extern void keycodePolls();
-extern uint_8 keycode;
-
-static char key_map[128] = {
-        0,  27, '1', '2', '3', '4', '5', '6', '7', '8',  // 0-9
-        '9', '0', '-', '=', 0, '\t', 'q', 'w', 'e', 'r',  // 10-19
-        't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n', 0,  // 20-29
-        'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', // 30-39
-        '\'', '`', 0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', // 40-49
-        'm', ',', '.', '/', 0, '*', 0, ' ', 0, 0,         // 50-59
-    };
-
-char keycodeToAscii(uint_8 code)
+uint_8 ipd(uint_16 port)
 {
-    if (code < 128)
-        return key_map[code];
-    return -1; // -1 on failure
+    uint_8 result = 0;
+    //     ( "string : in %dx, %al"  : "=a" (result) output "will be stored in al" : "d" (port) input "port in dx")
+    __asm__("in %%dx, %%al" : "=a" (result) : "d" (port));
+    return result;
 }
 
-char checkForKeys()
+void outb(uint_16 port, uint_8 data)
 {
-    keycodePolls();
-    char key = keycodeToAscii(keycode);
-    if (key < 0)
-        return -1;
-    else
-        return key;
+    __asm__ volatile("out %0, %1" : : "a" (data), "Nd" (port));
 }
+
+char checkKeys()
+{
+    uint_8 key = ipd(KEYBOARD_PORT);
+    switch (key)
+    {
+        case 0x1E: 
+            ipd(KEYBOARD_PORT); 
+            return 'A'; 
+            break;
+        case 0x30: 
+            ipd(KEYBOARD_PORT);
+            return 'B'; 
+            break;
+        case 0x2E: 
+            ipd(KEYBOARD_PORT);
+            return 'C'; 
+            break;
+        
+        case 0x39: 
+            ipd(KEYBOARD_PORT);
+            return ' '; 
+            break;
+
+        default: return 0; break;
+    }
+}
+
+
