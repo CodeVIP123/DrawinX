@@ -1,4 +1,4 @@
-#include "keyboard.h"
+#include "splash_screen.h"
 
 uint_64 ticks;
 const uint_32 freq = 100;

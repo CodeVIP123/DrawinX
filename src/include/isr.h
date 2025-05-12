@@ -8,8 +8,14 @@ void interrupt_handler(InterruptRegisters* regs)
             printf("***ERROR*** Interrupt 0: Division by Zero ***ERROR***", 0, 0);
             while(1);
             break;
+        case 14:
+            printf("***ERROR*** Interrupt 14: Page Fault ***ERROR***", 0, 0);
+            while(1);
+            break;
         default:
             uint_16 cur_p = printf("Unknown interrupt:", 0, 0);
+            setRowColumnForDebugPrintf(0, 20);
+            debugPrintf((string) "%x", regs->interrupt_no);
             while(1);
             break;
     }
@@ -123,3 +129,6 @@ void setIDTKeyboardGate()
 {
     setIDTGate(33, (uint_32) isr_keyboard, 0x08, 0x8E);
 }
+
+
+

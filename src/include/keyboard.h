@@ -8,9 +8,11 @@
 
 uint_32 prompt_length = 9;
 uint_32 line = 2;
+uint_32 column = 9;
 uint_32 aLine = 169;
 char buffer[256];
 uint_8 buffer_index = 0;
+bool is_enter_pressed = false;
 
 void keyboardHandler(InterruptRegisters *regs)
 {
@@ -29,6 +31,7 @@ void keyboardHandler(InterruptRegisters *regs)
         case '\0':
             break;
         case '\n':
+            is_enter_pressed = true;
             buffer[buffer_index] = '\0';
             printf("\n", line, 0);
             line++;
@@ -42,17 +45,23 @@ void keyboardHandler(InterruptRegisters *regs)
                 buffer[i] = 0;
             }
             buffer_index = 0;
+            column = 9;
             aLine = line * VGA_WIDTH + prompt_length;
             changePositionOfCursor(aLine);
             break;
         case '\b':
             break;
+        
         default:
+            if (is_enter_pressed)
+                is_enter_pressed = false;
             putc(ascii, aLine);
             buffer[buffer_index++] = ascii;
+            column++;
             aLine++;
             changePositionOfCursor(aLine);
             break;
     }
     outb(PIC1_COMMAND, PIC_EOI);
 }
+

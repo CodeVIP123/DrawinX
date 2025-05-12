@@ -60,6 +60,9 @@ void initIDT()
     masks &= ~(1 << 1);         // Clear bit 1 (unmask IRQ1)
     outb(0x21, masks);          // Unmask IRQ1
 
+    outb(0x21, ipd(0x21) | (1 << 6));  // Mask IRQ 14 (ATA Primary)
+    outb(0x21, ipd(0x21) | (1 << 7));  // Mask IRQ 15 (ATA Secondary)
+
     idtFlush((addr_t) &idt_ptr); 
     asm volatile("sti");  // Enable the interrupts
 }
