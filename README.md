@@ -10,3 +10,5 @@ Just run the build.sh file and it should automatically build the ISO file and sa
 
 ## How to clean
 To clean all the mess, just run the clean.sh
+
+## Note: Ignore the Qodana Bot from the Contributors, I tried it as an experiment but it just doesn't work and I alone work on this project, not and AI.. you can also verify this that I deleted the qodana branch from the repo.
